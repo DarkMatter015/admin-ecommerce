@@ -1,0 +1,9 @@
+.sidebar-content {
+    /* max-width: 15vw; */
+    min-width: 15rem;
+}
+
+.main-conent {
+    width: 70vw;
+    height: 100vh;
+}

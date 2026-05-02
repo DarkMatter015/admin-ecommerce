@@ -1,5 +1,9 @@
 import { LoginPage } from "@/pages/login";
 import { Route, Routes } from "react-router-dom";
+import { RequireAuth } from "../require-auth";
+import { ROLES } from "@/commons/roles_types";
+import { HomePage } from "@/pages/home";
+import { Layout } from "@/layouts/layout";
 
 export function AppRoutes() {
     return (
@@ -7,22 +11,22 @@ export function AppRoutes() {
             {/* public routes */}
             <Route path="login" element={<LoginPage />} />
             {/* <Route path="register" element={<RegisterPage />} /> */}
-            {/* <Route path="/" element={<Layout />}> */}
-            {/* protected routes - Roles: User and Admin */}
-            {/* <Route
+            <Route path="/" element={<Layout />}>
+                {/* protected routes - Roles: User and Admin */}
+                <Route
                     element={
-                        <RequireAuth allowedRoles={[ROLES.Admin, ROLES.User]} />
+                        <RequireAuth allowedRoles={[ROLES.Admin]} />
                     }
-                > */}
-            {/* <Route path="/" element={<HomePage />} />
+                >
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/home" element={<HomePage />} />
 
-                    <Route path="unauthorized" element={<Unauthorized />} /> */}
+                    {/* <Route path="unauthorized" element={<Unauthorized />} />
 
             {/* catch all */}
-            {/* <Route path="*" element={<NotFound />} /> */}
-            {/* </Route> */}
-            {/* </Route> */}
+                    {/* <Route path="*" element={<NotFound />} /> */}
+                </Route>
+            </Route>
         </Routes>
     );
 }

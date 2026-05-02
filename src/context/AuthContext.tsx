@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         delete api.defaults.headers.common["Authorization"];
         setAuthenticatedUser(undefined);
 
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
     };
 
     const updateUserProfile = (newUser: IAuthenticatedUser) => {
