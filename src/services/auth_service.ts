@@ -8,7 +8,7 @@ import type {
 } from "@/commons/auth_types";
 import type { IUser } from "@/commons/user_types";
 import { api } from "@/lib/axios";
-import type { IResponse } from "./service_types";
+import type { IResponse } from "./types/service_types";
 
 const ROUTE = "/auth";
 
