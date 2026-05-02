@@ -7,14 +7,14 @@ interface RequireAuthProps {
 }
 
 export function RequireAuth({ allowedRoles }: RequireAuthProps) {
-    const { authenticated, authenticatedUser } = useContext(AuthContext);
+    const { isAuthenticated, authenticatedUser } = useContext(AuthContext);
     const location = useLocation();
 
     return authenticatedUser?.authorities?.find((authority) =>
         allowedRoles?.includes(authority.authority),
     ) ? (
         <Outlet />
-    ) : authenticated ? (
+    ) : isAuthenticated ? (
         <Navigate to="/unauthorized" state={{ from: location }} replace />
     ) : (
         <Navigate to="/login" state={{ from: location }} replace />

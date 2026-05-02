@@ -26,10 +26,18 @@ export const signup = async (user: IUserRegister): Promise<IResponse> => {
  * Função para realizar a autenticação do usuário
  * @param user - Dados do usuário que será autenticado do tipo IUserLogin (username e password)
  * @returns - Retorna a resposta da API
- * Além disso salva o token no localStorage e adiciona o token no cabeçalho da requisição
  */
 export const login = async (user: IUserLogin) => {
     const data = await api.post(`${ROUTE}/login`, user);
+    return data;
+};
+
+/**
+ * Função para realizar a autenticação do usuário por meio de redes sociais
+ * @returns - Retorna a resposta da API
+ */
+export const loginSocial = async () => {
+    const data = await api.post(`${ROUTE}/login-social`);
     return data;
 };
 

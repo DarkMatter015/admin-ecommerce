@@ -1,17 +1,22 @@
-import { createContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 
+import type {
+    IAuthenticatedUser,
+    IAuthenticationResponse,
+} from "@/commons/auth_types";
 import { api } from "@/lib/axios";
-import { useNavigate } from "react-router-dom";
-import type { IAuthenticatedUser, IAuthenticationResponse } from "@/commons/auth_types";
 import { validateToken } from "@/services/auth_service";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
     isAuthenticated: boolean;
     authenticatedUser?: IAuthenticatedUser;
+    loading: boolean;
     handleLogin: (
         authenticationResponse: IAuthenticationResponse,
     ) => Promise<any>;
+    handleLoginSocial: (response: any) => Promise<any>;
     handleLogout: () => void;
     updateUserProfile: (user: IAuthenticatedUser) => void;
 }
@@ -19,17 +24,15 @@ interface AuthContextType {
 const AuthContext = createContext({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [authenticatedUser, setAuthenticatedUser] = useState<IAuthenticatedUser | undefined>();
+    const [authenticatedUser, setAuthenticatedUser] = useState<
+        IAuthenticatedUser | undefined
+    >();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(() => {
         const token = localStorage.getItem("token");
         return !!token; // Se tem token, começa true (carregando validação). Se não tem, começa false.
     });
-    const [authenticated, setAuthenticated] = useState(() => {
-        const token = localStorage.getItem("token");
-        return !!token; // Se tem token, começa true (autenticado). Se não tem, começa false.
-    }
-    );
+    const isAuthenticated = !!authenticatedUser;
 
     useEffect(() => {
         const initSession = async () => {
@@ -57,11 +60,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         initSession();
     }, []);
 
-    const handleLogin = async ({ token, user }: IAuthenticationResponse) => {
+    const setLocalStorageUserData = (
+        token: string,
+        user: IAuthenticatedUser,
+    ) => {
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
-
         setAuthenticatedUser(user);
+    };
+
+    const handleLogin = async ({ token, user }: IAuthenticationResponse) => {
+        setLocalStorageUserData(token, user);
     };
 
     const handleLogout = () => {
@@ -79,15 +88,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("user", JSON.stringify(newUser));
     };
 
-    const handleLoginSocial = async () => {
-        const response = await api.post("/auth-social");
+    const handleLoginSocial = async (response: any) => {
         console.log(response);
-        localStorage.setItem("token", JSON.stringify(response.data.token));
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-        setAuthenticatedUser(response.data.user);
-        setAuthenticated(true)
-        navigate("/");
-    }
+        setLocalStorageUserData(response.data.token, response.data.user);
+    };
 
     const contextValue = useMemo(
         () => ({
@@ -95,13 +99,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             authenticatedUser,
             loading,
             handleLogin,
+            handleLoginSocial,
             handleLogout,
             updateUserProfile,
         }),
         [authenticatedUser, loading, isAuthenticated],
     );
 
-    return <AuthContext.Provider value={ contextValue }> { children } </AuthContext.Provider>;
+    return <AuthContext value={contextValue}> {children} </AuthContext>;
 };
 
 export { AuthContext };
