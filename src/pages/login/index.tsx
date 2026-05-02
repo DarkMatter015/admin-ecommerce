@@ -49,14 +49,17 @@ export const LoginPage = () => {
                     ToastSeverity.SUCCESS,
                     "Login bem-sucedido",
                     "Seja bem vindo!",
-                    1000
+                    1000,
                 );
 
                 setTimeout(() => {
                     navigate("/", { replace: true });
                 }, NAVIGATION_DELAY);
             } else {
-                throw new Error(response?.data?.message || "Falha ao efetuar login. Verifique suas credenciais e tente novamente");
+                throw new Error(
+                    response?.data?.message ||
+                        "Falha ao efetuar login. Verifique suas credenciais e tente novamente",
+                );
             }
         } catch (error: any) {
             console.error("Erro durante login:", error);
@@ -68,10 +71,10 @@ export const LoginPage = () => {
     };
 
     return (
-        <main className="login-page flex align-items-center justify-content-center h-screen w-full bg-gray-100">
+        <main className="login-page flex align-items-center justify-content-center h-screen w-full">
             <div
                 id="login-form-container"
-                className="flex flex-column align-items-center justify-content-center p-4 shadow-2 border-round w-full lg:w-5"
+                className="flex flex-column align-items-center justify-content-center p-4 shadow-2 border-round w-10 lg:w-6 xl:w-4"
             >
                 <AuthHeader title="Entre na Sua Conta" />
 
