@@ -37,8 +37,8 @@ export const ProductListTemplate = (
 
     const handleDelete = () => {
         showConfirmDialog(
-            "dELETART",
-            `Deseja deltar o prod ${product.name}`,
+            "Deletar Produto",
+            `Deseja deletar o produto ${product.name}?`,
             "pi pi-exclamation-triangle",
             "p-button-danger",
             () => handleDeleteConfirm(product),
