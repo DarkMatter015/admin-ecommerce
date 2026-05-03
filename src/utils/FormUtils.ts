@@ -15,6 +15,9 @@ export interface ValidationOptions {
     label?: string; // e.g. "Nome", "Senha"
     required?: boolean | string;
     minLength?: number | { value: number; message: string };
+    maxLength?: number | { value: number; message: string };
+    min?: number | { value: number; message: string };
+    max?: number | { value: number; message: string };
     type?: ValidationType;
     custom?: (value: any) => boolean | string;
     pattern?: { value: RegExp; message: string };
@@ -40,6 +43,42 @@ export const createValidationRules = (options: ValidationOptions) => {
             };
         } else {
             rules.minLength = options.minLength;
+        }
+    }
+
+    // MaxLength
+    if (options.maxLength) {
+        if (typeof options.maxLength === 'number') {
+            rules.maxLength = {
+                value: options.maxLength,
+                message: `${label} deve ter no máximo ${options.maxLength} caracteres`
+            };
+        } else {
+            rules.maxLength = options.maxLength;
+        }
+    }
+
+    // Min
+    if (options.min) {
+        if (typeof options.min === 'number') {
+            rules.min = {
+                value: options.min,
+                message: `${label} deve ser no mínimo ${options.min}`
+            };
+        } else {
+            rules.min = options.min;
+        }
+    }
+
+    // Max
+    if (options.max) {
+        if (typeof options.max === 'number') {
+            rules.max = {
+                value: options.max,
+                message: `${label} deve ser no máximo ${options.max}`
+            };
+        } else {
+            rules.max = options.max;
         }
     }
 

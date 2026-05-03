@@ -10,6 +10,15 @@ export interface IProduct {
     category: ICategory;
 }
 
+export interface IUpdateProduct {
+    name?: string;
+    description?: string;
+    price?: number;
+    urlImage?: string;
+    quantityAvailableInStock?: number;
+    categoryId?: number;
+}
+
 export interface IItem {
     id?: number;
     product: IProduct;

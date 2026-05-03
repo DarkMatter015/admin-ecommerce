@@ -1,4 +1,4 @@
-import type { IProduct } from "@/commons/product_types";
+import type { IProduct, IUpdateProduct } from "@/commons/product_types";
 import { api } from "@/lib/axios";
 import { normalizePage } from "@/utils/ServiceUtils";
 import type { IPage } from "./types/service_types";
@@ -25,7 +25,7 @@ const mapApiToProduct = (item: ApiProduct): IProduct => {
 
 export const getProducts = async (
     page = 0,
-    size = 8
+    size = 30
 ): Promise<IPage<IProduct>> => {
     const { data } = await api.get(`${ROUTE}/page?page=${page}&size=${size}`);
     return normalizePage(data, mapApiToProduct);
@@ -50,3 +50,16 @@ export const getProductById = async (id: string): Promise<IProduct> => {
     const { data } = await api.get(`${ROUTE}/${idFormated}`);
     return mapApiToProduct(data);
 };
+
+export const updateProduct = async (id: number, product: IProduct): Promise<IProduct> => {
+    const updateProduct: IUpdateProduct = {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        urlImage: product.urlImage,
+        quantityAvailableInStock: product.quantityAvailableInStock,
+        categoryId: product.category.id,
+    };
+    const { data } = await api.patch(`${ROUTE}/${id}`, updateProduct);
+    return mapApiToProduct(data);
+}
