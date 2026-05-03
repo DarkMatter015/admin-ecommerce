@@ -1,5 +1,6 @@
 import { createContext, useRef, type ReactNode } from "react";
 
+import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 
 export enum ToastSeverity {
@@ -18,6 +19,14 @@ interface ToastContextType {
         detail: string,
         life?: number,
         stick?: boolean,
+    ) => void;
+    showConfirmDialog: (
+        header: string,
+        message: string,
+        icon: string,
+        acceptClassName: string,
+        onConfirm: () => void,
+        onCancel?: () => void,
     ) => void;
 }
 
@@ -46,16 +55,39 @@ export function ToastProvider({ children }: ToastProviderProps) {
         });
     };
 
+    const showConfirmDialog = (
+        header: string,
+        message: string,
+        icon: string,
+        acceptClassName: string,
+        onConfirm: () => void,
+        onCancel?: () => void,
+    ) => {
+        confirmDialog({
+            message: message,
+            header: header,
+            icon: icon,
+            acceptClassName: acceptClassName,
+            accept: onConfirm,
+            reject: onCancel,
+            acceptLabel: "Confirmar",
+            rejectLabel: "Cancelar",
+        });
+    };
+
     return (
         <ToastContext
             value={{
                 showToast,
+                showConfirmDialog,
             }}
         >
             {children}
             <Toast ref={toast} />
+            <ConfirmDialog />
         </ToastContext>
     );
 }
 
 export { ToastContext };
+

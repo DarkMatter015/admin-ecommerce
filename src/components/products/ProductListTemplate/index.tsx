@@ -1,11 +1,14 @@
 import type { ICategory } from "@/commons/category_types";
 import type { IProduct } from "@/commons/product_types";
+import { useToast } from "@/context/hooks/use-toast";
 import { Button } from "primereact/button";
 import { Image } from "primereact/image";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
 import { useState } from "react";
 import { EditProductModal } from "../EditProductModal";
+import { deleteProduct } from "@/services/product_service";
+import { ToastSeverity } from "@/context/ToastContext";
 
 export const ProductListTemplate = (
     product: IProduct,
@@ -13,9 +16,34 @@ export const ProductListTemplate = (
     categories: ICategory[],
 ) => {
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const { showConfirmDialog, showToast } = useToast();
 
     const handleEdit = () => {
         setEditModalVisible(true);
+    };
+
+    const handleDeleteConfirm = async (product: IProduct) => {
+        try {
+            await deleteProduct(product.id);
+
+            showToast(ToastSeverity.SUCCESS, "Sucesso", "Produto deletado com sucesso!")
+        } catch (error: any) {
+            console.error("Error deleting product:", error);
+            const message = error.response?.data?.message || "Erro ao deletar produto!";
+
+            showToast(ToastSeverity.ERROR, "Erro", message)
+        }
+    }
+
+    const handleDelete = () => {
+        showConfirmDialog(
+            "dELETART",
+            `Deseja deltar o prod ${product.name}`,
+            "pi pi-exclamation-triangle",
+            "p-button-danger",
+            () => handleDeleteConfirm(product),
+            () => {},
+        );
     };
 
     return (
@@ -26,6 +54,7 @@ export const ProductListTemplate = (
                 setVisible={setEditModalVisible}
                 categories={categories}
             />
+
             <div className="col-12" key={product.id}>
                 <div
                     className={classNames(
@@ -71,6 +100,7 @@ export const ProductListTemplate = (
                                 className="p-button-rounded"
                             />
                             <Button
+                                onClick={() => handleDelete()}
                                 outlined
                                 severity="danger"
                                 icon="pi pi-trash"

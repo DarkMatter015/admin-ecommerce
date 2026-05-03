@@ -1,7 +1,7 @@
 import type { IProduct, IUpdateProduct } from "@/commons/product_types";
 import { api } from "@/lib/axios";
 import { normalizePage } from "@/utils/ServiceUtils";
-import type { IPage } from "./types/service_types";
+import type { IPage, IResponse } from "./types/service_types";
 
 
 const ROUTE = "/products";
@@ -62,4 +62,9 @@ export const updateProduct = async (id: number, product: IProduct): Promise<IPro
     };
     const { data } = await api.patch(`${ROUTE}/${id}`, updateProduct);
     return mapApiToProduct(data);
+}
+
+export const deleteProduct = async (id: number): Promise<IResponse | void> => {
+    const response = await api.delete(`${ROUTE}/${id}`);
+    return response;
 }
