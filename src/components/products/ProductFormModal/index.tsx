@@ -1,9 +1,9 @@
 import type { ICategory } from "@/commons/category_types";
-import type { IProduct } from "@/commons/product_types";
+import type { IProduct, IProductForm } from "@/commons/product_types";
 import { useToast } from "@/context/hooks/use-toast";
 import { ToastSeverity } from "@/context/ToastContext";
-import { updateProduct } from "@/services/product_service";
-import { createValidationRules, VALIDATION_RULES } from "@/utils/FormUtils";
+import { createProduct, updateProduct } from "@/services/product_service";
+import { createValidationRules } from "@/utils/FormUtils";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
@@ -12,69 +12,116 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-export const EditProductModal = ({
-    visible,
-    setVisible,
-    product,
-    categories,
-}: {
+interface ProductFormModalProps {
     visible: boolean;
     setVisible: (visible: boolean) => void;
-    product: IProduct;
     categories: ICategory[];
-}) => {
-    const [selectedCategory, setSelectedCategory] = useState(product.category);
-    const { showToast } = useToast();
+    // quando informado, o modal funciona em modo edição
+    product?: IProduct;
+    onSuccess?: () => void;
+}
 
-    const DEFAULT_VALUES: IProduct = {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        urlImage: product.urlImage,
-        category: product.category,
-        quantityAvailableInStock: product.quantityAvailableInStock,
-    };
+const EMPTY_FORM: IProductForm = {
+    name: "",
+    description: "",
+    price: 0,
+    urlImage: "",
+    quantityAvailableInStock: 0,
+    category: null,
+};
+
+export const ProductFormModal = ({
+    visible,
+    setVisible,
+    categories,
+    product,
+    onSuccess,
+}: ProductFormModalProps) => {
+    const { showToast } = useToast();
+    const isEditMode = !!product;
+
+    const buildDefaults = (): IProductForm =>
+        product
+            ? {
+                  name: product.name,
+                  description: product.description,
+                  price: product.price,
+                  urlImage: product.urlImage,
+                  quantityAvailableInStock: product.quantityAvailableInStock,
+                  category: product.category,
+              }
+            : { ...EMPTY_FORM };
+
+    const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
+        product?.category ?? null,
+    );
 
     const {
         control,
         handleSubmit,
         reset,
         formState: { isSubmitting, isValid, isDirty },
-    } = useForm<IProduct>({
-        defaultValues: DEFAULT_VALUES,
+    } = useForm<IProductForm>({
+        defaultValues: buildDefaults(),
         mode: "all",
     });
+
+    useEffect(() => {
+        if (visible) {
+            const defaults = buildDefaults();
+            reset(defaults);
+            setSelectedCategory(defaults.category);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [visible, product]);
 
     const handleHideModal = () => {
         if (isSubmitting) return;
         setVisible(false);
-        setSelectedCategory(product.category);
-        reset();
+        reset(buildDefaults());
+        setSelectedCategory(product?.category ?? null);
     };
 
-    const handleSubmitEdit = async (data: IProduct) => {
-        console.log("Dados do formulário:", data);
+    const handleSubmitForm = async (data: IProductForm) => {
+        if (!data.category) return;
+
+        const payload: IProduct = {
+            id: product?.id ?? 0,
+            name: data.name.trim(),
+            description: data.description?.trim() ?? "",
+            price: data.price,
+            urlImage: data.urlImage?.trim() ?? "",
+            quantityAvailableInStock: data.quantityAvailableInStock,
+            category: data.category,
+        };
+
         try {
-            const response = await updateProduct(product.id, {
-                ...data,
-                category: selectedCategory,
-            });
-
-            console.log("Resposta da API:", response);
-
-            showToast(
-                ToastSeverity.SUCCESS,
-                "Sucesso",
-                "Produto editado com sucesso!",
-            );
+            if (isEditMode) {
+                await updateProduct(product!.id, payload);
+                showToast(
+                    ToastSeverity.SUCCESS,
+                    "Sucesso",
+                    "Produto editado com sucesso!",
+                );
+            } else {
+                await createProduct(payload);
+                showToast(
+                    ToastSeverity.SUCCESS,
+                    "Sucesso",
+                    "Produto criado com sucesso!",
+                );
+            }
             setVisible(false);
-        } catch (error) {
-            console.error("Erro ao editar produto:", error);
-            showToast(ToastSeverity.ERROR, "Erro", "Erro ao editar produto.");
+            onSuccess?.();
+        } catch (error: any) {
+            console.error("Erro ao salvar produto:", error);
+            const message =
+                error.response?.data?.message ||
+                "Erro ao salvar produto. Tente novamente.";
+            showToast(ToastSeverity.ERROR, "Erro", message);
         }
     };
 
@@ -95,7 +142,7 @@ export const EditProductModal = ({
     return (
         <Dialog
             draggable={false}
-            header="Editar Produto"
+            header={isEditMode ? "Editar Produto" : "Novo Produto"}
             visible={visible}
             className="w-30rem"
             onHide={() => {
@@ -105,26 +152,33 @@ export const EditProductModal = ({
         >
             <form
                 className="flex flex-column gap-2"
-                onSubmit={handleSubmit(handleSubmitEdit)}
+                onSubmit={handleSubmit(handleSubmitForm)}
                 noValidate
             >
-                <div className="field">
-                    <label htmlFor="input-id">ID</label>
-                    <div className="p-inputgroup w-full">
-                        <InputText
-                            id="input-id"
-                            type="text"
-                            disabled
-                            className={"w-full"}
-                            value={product.id.toString()}
-                        />
+                {isEditMode && (
+                    <div className="field">
+                        <label htmlFor="input-id">ID</label>
+                        <div className="p-inputgroup w-full">
+                            <InputText
+                                id="input-id"
+                                type="text"
+                                disabled
+                                className="w-full"
+                                value={product!.id.toString()}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <Controller
                     name="name"
                     control={control}
-                    rules={VALIDATION_RULES.displayName}
+                    rules={createValidationRules({
+                        label: "Nome",
+                        required: true,
+                        minLength: 2,
+                        maxLength: 255,
+                    })}
                     render={({ field, fieldState }) => (
                         <div className="field">
                             <label htmlFor="input-name">Nome</label>
@@ -132,10 +186,10 @@ export const EditProductModal = ({
                                 <InputText
                                     id="input-name"
                                     type="text"
-                                    autoComplete="name"
                                     placeholder="Digite o nome do produto"
+                                    minLength={2}
                                     maxLength={255}
-                                    aria-describedby={`input-name-error`}
+                                    aria-describedby="input-name-error"
                                     aria-invalid={!!fieldState.error}
                                     className={classNames("w-full", {
                                         "i-invalid":
@@ -151,7 +205,7 @@ export const EditProductModal = ({
                             </div>
                             {fieldState.error && (
                                 <small
-                                    id={`input-name-error`}
+                                    id="input-name-error"
                                     className="p-error block mt-1"
                                 >
                                     {fieldState.error.message}
@@ -166,20 +220,22 @@ export const EditProductModal = ({
                     control={control}
                     rules={createValidationRules({
                         label: "Descrição",
-                        required: true,
-                        minLength: 10,
                         maxLength: 255,
                     })}
                     render={({ field, fieldState }) => (
                         <div className="field">
-                            <label htmlFor="input-description">Descrição</label>
+                            <label htmlFor="input-description">
+                                Descrição{" "}
+                                <span className="text-500 text-sm">
+                                    (opcional)
+                                </span>
+                            </label>
                             <div className="p-inputgroup w-full">
                                 <InputTextarea
                                     id="input-description"
-                                    autoComplete="name"
                                     placeholder="Digite a descrição do produto"
                                     maxLength={255}
-                                    aria-describedby={`input-description-error`}
+                                    aria-describedby="input-description-error"
                                     aria-invalid={!!fieldState.error}
                                     className={classNames("w-full min-h-full", {
                                         "i-invalid":
@@ -188,19 +244,44 @@ export const EditProductModal = ({
                                         "i-valid":
                                             !fieldState.error &&
                                             !fieldState.invalid &&
-                                            field.value?.length > 0,
+                                            (field.value?.length ?? 0) > 0,
                                     })}
                                     {...field}
                                 />
                             </div>
                             {fieldState.error && (
                                 <small
-                                    id={`input-description-error`}
+                                    id="input-description-error"
                                     className="p-error block mt-1"
                                 >
                                     {fieldState.error.message}
                                 </small>
                             )}
+                        </div>
+                    )}
+                />
+
+                <Controller
+                    name="urlImage"
+                    control={control}
+                    render={({ field }) => (
+                        <div className="field">
+                            <label htmlFor="input-urlImage">
+                                URL da Imagem{" "}
+                                <span className="text-500 text-sm">
+                                    (opcional)
+                                </span>
+                            </label>
+                            <div className="p-inputgroup w-full">
+                                <InputText
+                                    id="input-urlImage"
+                                    type="text"
+                                    placeholder="https://..."
+                                    maxLength={500}
+                                    className="w-full"
+                                    {...field}
+                                />
+                            </div>
                         </div>
                     )}
                 />
@@ -221,16 +302,15 @@ export const EditProductModal = ({
                                     id="input-price"
                                     placeholder="Digite o preço do produto"
                                     value={field.value}
-                                    onValueChange={(e) =>
-                                        field.onChange(e.value)
-                                    }
+                                    onValueChange={(e) => field.onChange(e.value)}
                                     onBlur={field.onBlur}
                                     mode="currency"
                                     currency="BRL"
+                                    locale="pt-BR"
                                     minFractionDigits={2}
                                     maxFractionDigits={2}
                                     min={0.01}
-                                    aria-describedby={`input-price-error`}
+                                    aria-describedby="input-price-error"
                                     aria-invalid={!!fieldState.error}
                                     className={classNames("w-full", {
                                         "i-invalid":
@@ -245,7 +325,7 @@ export const EditProductModal = ({
                             </div>
                             {fieldState.error && (
                                 <small
-                                    id={`input-price-error`}
+                                    id="input-price-error"
                                     className="p-error block mt-1"
                                 >
                                     {fieldState.error.message}
@@ -272,17 +352,16 @@ export const EditProductModal = ({
                             <div className="p-inputgroup w-full">
                                 <InputNumber
                                     id="input-quantityAvailableInStock"
-                                    placeholder="Digite a quantidade disponível em estoque"
+                                    placeholder="Digite a quantidade disponível"
                                     value={field.value}
-                                    onValueChange={(e) =>
-                                        field.onChange(e.value)
-                                    }
+                                    onValueChange={(e) => field.onChange(e.value)}
                                     onBlur={field.onBlur}
                                     mode="decimal"
                                     minFractionDigits={0}
                                     maxFractionDigits={0}
                                     min={0}
-                                    aria-describedby={`input-quantityAvailableInStock-error`}
+                                    showButtons
+                                    aria-describedby="input-quantityAvailableInStock-error"
                                     aria-invalid={!!fieldState.error}
                                     className={classNames("w-full", {
                                         "i-invalid":
@@ -297,7 +376,7 @@ export const EditProductModal = ({
                             </div>
                             {fieldState.error && (
                                 <small
-                                    id={`input-quantityAvailableInStock-error`}
+                                    id="input-quantityAvailableInStock-error"
                                     className="p-error block mt-1"
                                 >
                                     {fieldState.error.message}
@@ -330,7 +409,7 @@ export const EditProductModal = ({
                                     optionLabel="name"
                                     emptyMessage="Nenhuma categoria disponível"
                                     placeholder="Selecione uma categoria"
-                                    aria-describedby={`input-category-error`}
+                                    aria-describedby="input-category-error"
                                     aria-invalid={!!fieldState.error}
                                     panelClassName="bg-primary-reverse"
                                     className="w-full"
@@ -360,7 +439,7 @@ export const EditProductModal = ({
                             </div>
                             {fieldState.error && (
                                 <small
-                                    id={`input-category-error`}
+                                    id="input-category-error"
                                     className="p-error block mt-1"
                                 >
                                     {fieldState.error.message}
@@ -370,12 +449,16 @@ export const EditProductModal = ({
                     )}
                 />
 
-                <div className="flex flex-column gap-3">
+                <div className="flex flex-column gap-3 mt-2">
                     <Button
                         type="submit"
                         severity="success"
                         label="Salvar"
-                        disabled={isSubmitting || !isValid || !isDirty}
+                        disabled={
+                            isSubmitting ||
+                            !isValid ||
+                            (isEditMode && !isDirty)
+                        }
                         loading={isSubmitting}
                     />
                     <Button

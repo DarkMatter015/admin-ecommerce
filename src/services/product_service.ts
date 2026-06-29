@@ -1,4 +1,8 @@
-import type { IProduct, IUpdateProduct } from "@/commons/product_types";
+import type {
+    ICreateProduct,
+    IProduct,
+    IUpdateProduct,
+} from "@/commons/product_types";
 import { api } from "@/lib/axios";
 import { normalizePage } from "@/utils/ServiceUtils";
 import type { IPage, IResponse } from "./types/service_types";
@@ -20,6 +24,7 @@ const mapApiToProduct = (item: ApiProduct): IProduct => {
             "/assets/images/common/unavailable_image_product.png",
         category: item.category,
         quantityAvailableInStock: Number(item.quantityAvailableInStock),
+        active: item.active,
     };
 };
 
@@ -64,6 +69,36 @@ export const updateProduct = async (id: number, product: IProduct): Promise<IPro
     return mapApiToProduct(data);
 }
 
+// Regra de negócio: name (2-255), price positivo, quantidade >= 0, categoria obrigatória
+export const createProduct = async (
+    product: IProduct,
+): Promise<IProduct> => {
+    const createPayload: ICreateProduct = {
+        name: product.name,
+        description: product.description || undefined,
+        price: product.price,
+        urlImage: product.urlImage || undefined,
+        quantityAvailableInStock: product.quantityAvailableInStock,
+        categoryId: product.category.id,
+    };
+    const { data } = await api.post(`${ROUTE}`, createPayload);
+    return mapApiToProduct(data);
+};
+
+// Soft delete: inativa o produto
+export const inactivateProduct = async (
+    id: number,
+): Promise<IResponse | void> => {
+    return await api.delete(`${ROUTE}/inactivate/${id}`);
+};
+
+// Reativa o produto
+export const activateProduct = async (id: number): Promise<IProduct> => {
+    const { data } = await api.post(`${ROUTE}/activate/${id}`);
+    return mapApiToProduct(data);
+};
+
+// Exclusão permanente
 export const deleteProduct = async (id: number): Promise<IResponse | void> => {
     const response = await api.delete(`${ROUTE}/${id}`);
     return response;

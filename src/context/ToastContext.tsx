@@ -47,7 +47,13 @@ export function ToastProvider({ children }: ToastProviderProps) {
         stick?: boolean,
     ) => {
         toast.current?.show({
-            severity: severity || ToastSeverity.INFO,
+            severity:
+                (severity as
+                    | "success"
+                    | "info"
+                    | "warn"
+                    | "error"
+                    | undefined) || "info",
             summary: summary,
             detail: detail,
             life: life || 3000,
@@ -90,4 +96,3 @@ export function ToastProvider({ children }: ToastProviderProps) {
 }
 
 export { ToastContext };
-

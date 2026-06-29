@@ -8,6 +8,7 @@ export interface IProduct {
     urlImage: string;
     quantityAvailableInStock: number;
     category: ICategory;
+    active?: boolean;
 }
 
 export interface IUpdateProduct {
@@ -17,6 +18,25 @@ export interface IUpdateProduct {
     urlImage?: string;
     quantityAvailableInStock?: number;
     categoryId?: number;
+}
+
+export interface ICreateProduct {
+    name: string;
+    description?: string;
+    price: number;
+    urlImage?: string;
+    quantityAvailableInStock: number;
+    categoryId: number;
+}
+
+// Valores padrão para o formulário de criação de produto
+export interface IProductForm {
+    name: string;
+    description: string;
+    price: number;
+    urlImage: string;
+    quantityAvailableInStock: number;
+    category: ICategory | null;
 }
 
 export interface IItem {
