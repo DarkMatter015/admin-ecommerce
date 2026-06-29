@@ -7,6 +7,7 @@ import { Layout } from "@/layouts/layout";
 import { ProductsPage } from "@/pages/products";
 import { CategoriesPage } from "@/pages/categories";
 import { OrdersPage } from "@/pages/orders";
+import { UsersPage } from "@/pages/users";
 import { NotFoundPage } from "@/pages/not-found";
 import { UnauthorizedPage } from "@/pages/unauthorized";
 
@@ -25,6 +26,7 @@ export function AppRoutes() {
                     <Route path="products" element={<ProductsPage />} />
                     <Route path="categories" element={<CategoriesPage />} />
                     <Route path="orders" element={<OrdersPage />} />
+                    <Route path="users" element={<UsersPage />} />
                 </Route>
             </Route>
 

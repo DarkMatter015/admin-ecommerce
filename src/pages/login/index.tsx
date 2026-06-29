@@ -39,9 +39,7 @@ export const LoginPage = () => {
 
     const [capsLockOn, setCapsLockOn] = useState(false);
 
-    const handleCapsLock = (
-        event: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
+    const handleCapsLock = (event: React.KeyboardEvent<HTMLInputElement>) => {
         setCapsLockOn(event.getModifierState?.("CapsLock") ?? false);
     };
 
@@ -262,15 +260,6 @@ export const LoginPage = () => {
                         }}
                     />
 
-                    <div className="flex justify-content-end">
-                        <Link
-                            to="/forgot-password"
-                            className="login-link text-sm"
-                        >
-                            Esqueceu a senha?
-                        </Link>
-                    </div>
-
                     <Button
                         severity="info"
                         type="submit"
@@ -279,14 +268,6 @@ export const LoginPage = () => {
                         disabled={isSubmitting}
                         aria-label="Entrar"
                         label={isSubmitting ? "Entrando..." : "Entrar"}
-                    />
-
-                    <div className="login-divider my-2">ou</div>
-
-                    <AuthFooter
-                        text="Não tem uma conta?"
-                        linkText="Cadastre-se"
-                        to="/register"
                     />
                 </form>
             </section>
