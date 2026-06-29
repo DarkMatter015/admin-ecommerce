@@ -518,7 +518,7 @@ export const ProductFormModal = ({
                                     placeholder="Selecione uma categoria"
                                     aria-describedby="input-category-error"
                                     aria-invalid={!!fieldState.error}
-                                    panelClassName="bg-primary-reverse"
+                                    panelClassName="rh-dropdown-panel"
                                     className="w-full"
                                     itemTemplate={(option) => (
                                         <div className="flex align-items-center gap-2">
