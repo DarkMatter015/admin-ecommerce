@@ -1,18 +1,29 @@
 import type { ICategory } from "@/commons/category_types";
-import type { IProduct, IProductForm } from "@/commons/product_types";
+import type {
+    IProduct,
+    IProductForm,
+    IProductImage,
+} from "@/commons/product_types";
 import { useToast } from "@/context/hooks/use-toast";
 import { ToastSeverity } from "@/context/ToastContext";
-import { createProduct, updateProduct } from "@/services/product_service";
+import {
+    createProduct,
+    deleteProductImage,
+    updateProduct,
+    uploadProductImages,
+} from "@/services/product_service";
 import { createValidationRules } from "@/utils/FormUtils";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
+import { FileUpload, type FileUploadSelectEvent } from "primereact/fileupload";
+import { Image } from "primereact/image";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 interface ProductFormModalProps {
@@ -28,7 +39,6 @@ const EMPTY_FORM: IProductForm = {
     name: "",
     description: "",
     price: 0,
-    urlImage: "",
     quantityAvailableInStock: 0,
     category: null,
 };
@@ -49,7 +59,6 @@ export const ProductFormModal = ({
                   name: product.name,
                   description: product.description,
                   price: product.price,
-                  urlImage: product.urlImage,
                   quantityAvailableInStock: product.quantityAvailableInStock,
                   category: product.category,
               }
@@ -58,6 +67,13 @@ export const ProductFormModal = ({
     const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
         product?.category ?? null,
     );
+
+    const [existingImages, setExistingImages] = useState<IProductImage[]>(
+        product?.images ?? [],
+    );
+    const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+    const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
+    const fileUploadRef = useRef<FileUpload>(null);
 
     const {
         control,
@@ -74,6 +90,9 @@ export const ProductFormModal = ({
             const defaults = buildDefaults();
             reset(defaults);
             setSelectedCategory(defaults.category);
+            setExistingImages(product?.images ?? []);
+            setPendingFiles([]);
+            fileUploadRef.current?.clear();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible, product]);
@@ -83,6 +102,41 @@ export const ProductFormModal = ({
         setVisible(false);
         reset(buildDefaults());
         setSelectedCategory(product?.category ?? null);
+        setExistingImages(product?.images ?? []);
+        setPendingFiles([]);
+        fileUploadRef.current?.clear();
+    };
+
+    const handleSelectFiles = (event: FileUploadSelectEvent) => {
+        setPendingFiles(Array.from(event.files));
+    };
+
+    const handleClearFiles = () => {
+        setPendingFiles([]);
+    };
+
+    const handleDeleteExistingImage = async (imageId: number) => {
+        if (!product) return;
+        setDeletingImageId(imageId);
+        try {
+            await deleteProductImage(product.id, imageId);
+            setExistingImages((prev) =>
+                prev.filter((image) => image.id !== imageId),
+            );
+            showToast(
+                ToastSeverity.SUCCESS,
+                "Sucesso",
+                "Imagem removida com sucesso!",
+            );
+        } catch (error: any) {
+            console.error("Erro ao remover imagem:", error);
+            const message =
+                error.response?.data?.message ||
+                "Erro ao remover imagem. Tente novamente.";
+            showToast(ToastSeverity.ERROR, "Erro", message);
+        } finally {
+            setDeletingImageId(null);
+        }
     };
 
     const handleSubmitForm = async (data: IProductForm) => {
@@ -93,7 +147,7 @@ export const ProductFormModal = ({
             name: data.name.trim(),
             description: data.description?.trim() ?? "",
             price: data.price,
-            urlImage: data.urlImage?.trim() ?? "",
+            urlImage: product?.urlImage ?? "",
             quantityAvailableInStock: data.quantityAvailableInStock,
             category: data.category,
         };
@@ -101,13 +155,19 @@ export const ProductFormModal = ({
         try {
             if (isEditMode) {
                 await updateProduct(product!.id, payload);
+                if (pendingFiles.length > 0) {
+                    await uploadProductImages(product!.id, pendingFiles);
+                }
                 showToast(
                     ToastSeverity.SUCCESS,
                     "Sucesso",
                     "Produto editado com sucesso!",
                 );
             } else {
-                await createProduct(payload);
+                const created = await createProduct(payload);
+                if (pendingFiles.length > 0) {
+                    await uploadProductImages(created.id, pendingFiles);
+                }
                 showToast(
                     ToastSeverity.SUCCESS,
                     "Sucesso",
@@ -261,30 +321,77 @@ export const ProductFormModal = ({
                     )}
                 />
 
-                <Controller
-                    name="urlImage"
-                    control={control}
-                    render={({ field }) => (
-                        <div className="field">
-                            <label htmlFor="input-urlImage">
-                                URL da Imagem{" "}
-                                <span className="text-500 text-sm">
-                                    (opcional)
-                                </span>
-                            </label>
-                            <div className="p-inputgroup w-full">
-                                <InputText
-                                    id="input-urlImage"
-                                    type="text"
-                                    placeholder="https://..."
-                                    maxLength={500}
-                                    className="w-full"
-                                    {...field}
-                                />
-                            </div>
+                <div className="field">
+                    <label htmlFor="input-images">
+                        Imagens{" "}
+                        <span className="text-500 text-sm">(opcional)</span>
+                    </label>
+
+                    {existingImages.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {existingImages.map((image) => (
+                                <div
+                                    key={image.id}
+                                    className="relative border-round overflow-hidden border-1 surface-border"
+                                    style={{ width: "5rem", height: "5rem" }}
+                                >
+                                    <Image
+                                        src={image.url}
+                                        alt="Imagem do produto"
+                                        imageStyle={{
+                                            width: "5rem",
+                                            height: "5rem",
+                                            objectFit: "cover",
+                                        }}
+                                        preview
+                                    />
+                                    <Button
+                                        type="button"
+                                        icon="pi pi-times"
+                                        rounded
+                                        text
+                                        severity="danger"
+                                        className="absolute"
+                                        style={{ top: 0, right: 0 }}
+                                        aria-label="Remover imagem"
+                                        loading={deletingImageId === image.id}
+                                        disabled={
+                                            isSubmitting ||
+                                            deletingImageId !== null
+                                        }
+                                        onClick={() =>
+                                            handleDeleteExistingImage(image.id)
+                                        }
+                                    />
+                                </div>
+                            ))}
                         </div>
                     )}
-                />
+
+                    <FileUpload
+                        ref={fileUploadRef}
+                        id="input-images"
+                        name="files"
+                        multiple
+                        accept="image/*"
+                        maxFileSize={10000000}
+                        auto={false}
+                        customUpload
+                        mode="advanced"
+                        chooseLabel="Selecionar imagens"
+                        uploadOptions={{ className: "hidden" }}
+                        cancelLabel="Limpar"
+                        disabled={isSubmitting}
+                        onSelect={handleSelectFiles}
+                        onClear={handleClearFiles}
+                        emptyTemplate={
+                            <p className="m-0 text-500">
+                                Arraste imagens aqui ou clique em "Selecionar
+                                imagens".
+                            </p>
+                        }
+                    />
+                </div>
 
                 <Controller
                     name="price"
@@ -457,7 +564,9 @@ export const ProductFormModal = ({
                         disabled={
                             isSubmitting ||
                             !isValid ||
-                            (isEditMode && !isDirty)
+                            (isEditMode &&
+                                !isDirty &&
+                                pendingFiles.length === 0)
                         }
                         loading={isSubmitting}
                     />

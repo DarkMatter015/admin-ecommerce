@@ -1,6 +1,7 @@
 import type {
     ICreateProduct,
     IProduct,
+    IProductImage,
     IUpdateProduct,
 } from "@/commons/product_types";
 import { api } from "@/lib/axios";
@@ -13,7 +14,16 @@ const ROUTE = "/products";
 
 type ApiProduct = Record<string, any>;
 
+const mapApiToProductImage = (item: ApiProduct): IProductImage => ({
+    id: item.id,
+    url: item.url,
+    position: Number(item.position ?? 0),
+});
+
 const mapApiToProduct = (item: ApiProduct): IProduct => {
+    const images: IProductImage[] = Array.isArray(item.images)
+        ? item.images.map(mapApiToProductImage)
+        : [];
     return {
         id: item.id,
         name: item.name,
@@ -25,6 +35,7 @@ const mapApiToProduct = (item: ApiProduct): IProduct => {
         category: item.category,
         quantityAvailableInStock: Number(item.quantityAvailableInStock),
         active: item.active,
+        images,
     };
 };
 
@@ -61,7 +72,6 @@ export const updateProduct = async (id: number, product: IProduct): Promise<IPro
         name: product.name,
         description: product.description,
         price: product.price,
-        urlImage: product.urlImage,
         quantityAvailableInStock: product.quantityAvailableInStock,
         categoryId: product.category.id,
     };
@@ -77,12 +87,41 @@ export const createProduct = async (
         name: product.name,
         description: product.description || undefined,
         price: product.price,
-        urlImage: product.urlImage || undefined,
         quantityAvailableInStock: product.quantityAvailableInStock,
         categoryId: product.category.id,
     };
     const { data } = await api.post(`${ROUTE}`, createPayload);
     return mapApiToProduct(data);
+};
+
+// Faz upload de uma ou mais imagens para o produto (armazenadas no MinIO)
+export const uploadProductImages = async (
+    productId: number,
+    files: File[],
+): Promise<IProductImage[]> => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    const { data } = await api.post(
+        `${ROUTE}/${productId}/images`,
+        formData,
+    );
+    return Array.isArray(data) ? data.map(mapApiToProductImage) : [];
+};
+
+// Lista as imagens de um produto
+export const getProductImages = async (
+    productId: number,
+): Promise<IProductImage[]> => {
+    const { data } = await api.get(`${ROUTE}/${productId}/images`);
+    return Array.isArray(data) ? data.map(mapApiToProductImage) : [];
+};
+
+// Remove uma imagem do produto
+export const deleteProductImage = async (
+    productId: number,
+    imageId: number,
+): Promise<IResponse | void> => {
+    return await api.delete(`${ROUTE}/${productId}/images/${imageId}`);
 };
 
 // Soft delete: inativa o produto

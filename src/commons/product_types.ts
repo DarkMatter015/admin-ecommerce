@@ -1,5 +1,11 @@
 import type { ICategory } from "./category_types";
 
+export interface IProductImage {
+    id: number;
+    url: string;
+    position: number;
+}
+
 export interface IProduct {
     id: number;
     name: string;
@@ -9,13 +15,13 @@ export interface IProduct {
     quantityAvailableInStock: number;
     category: ICategory;
     active?: boolean;
+    images?: IProductImage[];
 }
 
 export interface IUpdateProduct {
     name?: string;
     description?: string;
     price?: number;
-    urlImage?: string;
     quantityAvailableInStock?: number;
     categoryId?: number;
 }
@@ -24,7 +30,6 @@ export interface ICreateProduct {
     name: string;
     description?: string;
     price: number;
-    urlImage?: string;
     quantityAvailableInStock: number;
     categoryId: number;
 }
@@ -34,7 +39,6 @@ export interface IProductForm {
     name: string;
     description: string;
     price: number;
-    urlImage: string;
     quantityAvailableInStock: number;
     category: ICategory | null;
 }
