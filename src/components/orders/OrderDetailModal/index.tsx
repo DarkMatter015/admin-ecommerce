@@ -1,4 +1,5 @@
 import type { IOrder, IOrderStatus } from "@/commons/order_types";
+import type { IOrderDocument } from "@/commons/order_document_types";
 import { useToast } from "@/context/hooks/use-toast";
 import { ToastSeverity } from "@/context/ToastContext";
 import { updateOrderStatus } from "@/services/order_service";
@@ -20,6 +21,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import { useEffect, useState, type ReactNode } from "react";
+import { OrderDocuments } from "../OrderDocuments";
 
 interface OrderDetailModalProps {
     visible: boolean;
@@ -82,6 +84,13 @@ export const OrderDetailModal = ({
     );
     const [statusMessage, setStatusMessage] = useState<string>("");
     const [isSaving, setIsSaving] = useState(false);
+    const [hasNotaFiscal, setHasNotaFiscal] = useState(false);
+
+    const handleDocumentsChange = (documents: IOrderDocument[]) => {
+        setHasNotaFiscal(
+            documents.some((doc) => doc.documentType === "NOTA_FISCAL")
+        );
+    };
 
     useEffect(() => {
         if (order) {
@@ -99,6 +108,20 @@ export const OrderDetailModal = ({
 
     const handleSave = async () => {
         if (selectedStatusId === null) return;
+
+        const targetStatus = statuses.find((s) => s.id === selectedStatusId);
+        if (
+            targetStatus?.name?.toUpperCase() === "ENVIADO" &&
+            !hasNotaFiscal
+        ) {
+            showToast(
+                ToastSeverity.WARN,
+                "Nota fiscal obrigatória",
+                "Anexe a nota fiscal antes de marcar o pedido como enviado."
+            );
+            return;
+        }
+
         setIsSaving(true);
         try {
             const updated = await updateOrderStatus(order.id, {
@@ -112,13 +135,12 @@ export const OrderDetailModal = ({
             );
             onUpdated(updated);
             onHide();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Erro ao atualizar status do pedido:", error);
-            showToast(
-                ToastSeverity.ERROR,
-                "Erro",
-                "Não foi possível atualizar o status do pedido."
-            );
+            const message =
+                error.response?.data?.message ||
+                "Não foi possível atualizar o status do pedido.";
+            showToast(ToastSeverity.ERROR, "Erro", message);
         } finally {
             setIsSaving(false);
         }
@@ -347,6 +369,18 @@ export const OrderDetailModal = ({
                             Total: {formatCurrency(total + shipmentPrice)}
                         </span>
                     </div>
+                </section>
+
+                {/* Anexos */}
+                <section className="border-1 surface-border border-round p-3">
+                    <SectionTitle
+                        icon="pi pi-paperclip"
+                        title="Anexos do pedido"
+                    />
+                    <OrderDocuments
+                        orderId={order.id}
+                        onDocumentsChange={handleDocumentsChange}
+                    />
                 </section>
 
                 {/* Alterar status */}
