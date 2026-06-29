@@ -74,7 +74,7 @@ export const LoginPage = () => {
         <main className="login-page flex align-items-center justify-content-center h-screen w-full">
             <div
                 id="login-form-container"
-                className="flex flex-column align-items-center justify-content-center p-4 shadow-2 border-round w-10 lg:w-6 xl:w-4"
+                className="flex flex-column align-items-center bg-primary-reverse justify-content-center p-4 shadow-2 border-round w-10 lg:w-6 xl:w-4"
             >
                 <AuthHeader title="Entre na Sua Conta" />
 

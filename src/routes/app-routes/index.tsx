@@ -5,31 +5,27 @@ import { ROLES } from "@/commons/roles_types";
 import { HomePage } from "@/pages/home";
 import { Layout } from "@/layouts/layout";
 import { ProductsPage } from "@/pages/products";
+import { NotFoundPage } from "@/pages/not-found";
+import { UnauthorizedPage } from "@/pages/unauthorized";
 
 export function AppRoutes() {
     return (
         <Routes>
-            {/* public routes */}
-            <Route path="login" element={<LoginPage />} />
-            {/* <Route path="register" element={<RegisterPage />} /> */}
-            <Route path="/" element={<Layout />}>
-                {/* protected routes - Roles: User and Admin */}
-                {/* <Route
-                    element={
-                        <RequireAuth allowedRoles={[ROLES.Admin]} />
-                    }
-                > */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/home" element={<HomePage />} />
+            {/* rotas públicas */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-                <Route path="/products" element={<ProductsPage />} />
-
-                {/* <Route path="unauthorized" element={<Unauthorized />} />
+            {/* rotas protegidas - exige autenticação + perfil ADMIN */}
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="home" element={<HomePage />} />
+                    <Route path="products" element={<ProductsPage />} />
+                </Route>
+            </Route>
 
             {/* catch all */}
-                {/* <Route path="*" element={<NotFound />} /> */}
-                {/* </Route> */}
-            </Route>
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }

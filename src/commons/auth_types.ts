@@ -22,15 +22,19 @@ export interface IResetPassword {
 }
 
 // Interfaces para os dados de autenticação
-export interface IAuthorities {
-    authority: string;
+export interface IRole {
+    id: number | null;
+    active: boolean | null;
+    name: string;
 }
 
 export interface IAuthenticatedUser {
     id: number;
     email: string;
     displayName: string;
-    authorities: IAuthorities[];
+    cpf?: string;
+    active?: boolean;
+    roles: IRole[];
 }
 
 export interface IUserUpdate {
