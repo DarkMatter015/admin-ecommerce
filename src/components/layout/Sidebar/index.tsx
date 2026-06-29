@@ -66,6 +66,15 @@ export const Sidebar = () => {
                         </li>
                         <li>
                             <Link
+                                to={"/orders"}
+                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
+                            >
+                                <i className="pi pi-shopping-bag mr-2"></i>
+                                <span className="font-medium">Pedidos</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
                                 to={"/categories"}
                                 className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
                             >

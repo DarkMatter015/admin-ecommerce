@@ -5,6 +5,7 @@ import { ROLES } from "@/commons/roles_types";
 import { HomePage } from "@/pages/home";
 import { Layout } from "@/layouts/layout";
 import { ProductsPage } from "@/pages/products";
+import { OrdersPage } from "@/pages/orders";
 import { NotFoundPage } from "@/pages/not-found";
 import { UnauthorizedPage } from "@/pages/unauthorized";
 
@@ -21,6 +22,7 @@ export function AppRoutes() {
                     <Route index element={<HomePage />} />
                     <Route path="home" element={<HomePage />} />
                     <Route path="products" element={<ProductsPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
                 </Route>
             </Route>
 
