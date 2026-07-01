@@ -1,5 +1,4 @@
 import type { IUserLogin } from "@/commons/auth_types";
-import { AuthFooter } from "@/components/auth/AuthFooter";
 import { useAuth } from "@/context/hooks/use-auth";
 import { useToast } from "@/context/hooks/use-toast";
 import { ToastSeverity } from "@/context/ToastContext";
@@ -11,7 +10,7 @@ import { Password } from "primereact/password";
 import { classNames } from "primereact/utils";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./login.css";
 
 const FORM_DEFAULT_VALUES: IUserLogin = {
