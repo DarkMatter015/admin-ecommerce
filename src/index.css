@@ -394,31 +394,6 @@ a:hover {
 }
 
 /* --------------------------------------------------------------------------
-   Sidebar (layout admin)
-   -------------------------------------------------------------------------- */
-.sidebar-content {
-    min-width: 15rem;
-    background: var(--rh-surface-glass) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-right: 1px solid var(--rh-border) !important;
-}
-
-.sidebar-content a {
-    color: var(--rh-text-muted) !important;
-    border-radius: var(--rh-radius) !important;
-}
-
-.sidebar-content a:hover {
-    background: var(--rh-surface-hover) !important;
-    color: var(--rh-text) !important;
-}
-
-.sidebar-content a i {
-    color: var(--rh-primary);
-}
-
-/* --------------------------------------------------------------------------
    Barra de rolagem
    -------------------------------------------------------------------------- */
 * {
@@ -464,4 +439,74 @@ a:hover {
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid var(--rh-border);
     border-radius: var(--rh-radius-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Responsividade global (telas menores / mobile)
+   -------------------------------------------------------------------------- */
+
+/* Diálogos nunca estouram a largura da viewport em telas pequenas. */
+@media (max-width: 640px) {
+    .p-dialog.p-component {
+        width: 94vw !important;
+        max-width: 94vw !important;
+        max-height: 90vh;
+        margin: 0.5rem;
+    }
+
+    .p-dialog .p-dialog-content {
+        padding: 1rem 1.25rem;
+    }
+
+    .p-dialog .p-dialog-header {
+        padding: 1rem 1.25rem;
+    }
+
+    /* Paginador quebra em várias linhas em vez de estourar. */
+    .p-paginator {
+        flex-wrap: wrap;
+        row-gap: 0.35rem;
+    }
+
+    /* Cabeçalhos de tabela/dataview com espaçamento confortável. */
+    .p-datatable .p-datatable-header,
+    .p-dataview .p-dataview-header {
+        padding: 0.85rem;
+    }
+
+    /* Células com menos padding para caber mais conteúdo. */
+    .p-datatable .p-datatable-thead > tr > th,
+    .p-datatable .p-datatable-tbody > tr > td {
+        padding: 0.65rem 0.75rem;
+    }
+
+    /* Toolbars/menus de ação quebram linha quando faltar espaço. */
+    .p-toolbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* Tabelas largas rolam horizontalmente sem quebrar o layout da página. */
+.p-datatable-wrapper {
+    overflow-x: auto;
+}
+
+/* Impede que inputs/dropdowns com largura fixa estourem em telas estreitas. */
+@media (max-width: 576px) {
+    .p-inputtext,
+    .p-dropdown,
+    .p-multiselect,
+    .p-calendar,
+    .p-password {
+        max-width: 100%;
+    }
+
+    /* Utilitários de largura fixa do PrimeFlex viram largura total no mobile. */
+    .w-12rem,
+    .w-15rem,
+    .w-20rem,
+    .w-30rem {
+        width: 100% !important;
+    }
 }

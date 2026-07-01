@@ -204,7 +204,7 @@ export const ProductFormModal = ({
             draggable={false}
             header={isEditMode ? "Editar Produto" : "Novo Produto"}
             visible={visible}
-            className="w-30rem"
+            className="w-11 sm:w-30rem"
             onHide={() => {
                 if (!visible) return;
                 handleHideModal();

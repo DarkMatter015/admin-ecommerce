@@ -1,6 +1,5 @@
 .dashboard {
-    height: 100vh;
-    overflow-y: auto;
+    min-height: 100%;
     padding: 1.75rem 2rem 2.5rem;
     display: flex;
     flex-direction: column;

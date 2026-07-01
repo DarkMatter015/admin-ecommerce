@@ -98,7 +98,7 @@ export const UserFormModal = ({
             draggable={false}
             header="Novo Usuário"
             visible={visible}
-            className="w-30rem"
+            className="w-11 sm:w-30rem"
             onHide={() => {
                 if (!visible) return;
                 handleHideModal();

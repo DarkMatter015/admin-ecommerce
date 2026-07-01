@@ -3,26 +3,30 @@ import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { Image } from "primereact/image";
 import { Menu } from "primereact/menu";
-import { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import "./sidebar.css";
+
+const NAV_ITEMS = [
+    { to: "/home", icon: "pi pi-home", label: "Home" },
+    { to: "/products", icon: "pi pi-shopping-cart", label: "Produtos" },
+    { to: "/orders", icon: "pi pi-shopping-bag", label: "Pedidos" },
+    { to: "/categories", icon: "pi pi-tags", label: "Categorias" },
+    { to: "/users", icon: "pi pi-users", label: "Usuários" },
+];
 
 export const Sidebar = () => {
     const { authenticatedUser, handleLogout } = useAuth();
-    const navigate = useNavigate();
     const menuRef = useRef<Menu>(null);
+    const location = useLocation();
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    // Fecha o drawer sempre que a rota muda (navegação em telas pequenas).
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [location.pathname]);
 
     const menuItems = [
-        {
-            label: "Editar Perfil",
-            icon: "pi pi-user-edit",
-            command: () => {
-                navigate("/edit-profile");
-            },
-        },
-        {
-            separator: true,
-        },
         {
             label: "Sair",
             icon: "pi pi-sign-out",
@@ -32,69 +36,69 @@ export const Sidebar = () => {
         },
     ];
 
+    const logo = (
+        <Image
+            src="/images/logo/logo_riffhouse_white.png"
+            alt="RiffHouse Logo"
+            width="140px"
+        />
+    );
+
     return (
-        <div className="surface-section h-screen flex-shrink-0 lg:block border-right-1 surface-border sidebar-content">
-            <div className="flex flex-column h-full">
-                <div className="flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
-                    <Link to={"/home"} className="flex align-items-center">
-                        <Image
-                            src="/images/logo/logo_riffhouse_white.png"
-                            alt="RiffHouse Logo"
-                            width="150px"
-                        ></Image>
+        <>
+            {/* Barra superior (apenas mobile/tablet) */}
+            <header className="rh-topbar">
+                <Button
+                    icon="pi pi-bars"
+                    text
+                    rounded
+                    aria-label="Abrir menu"
+                    className="rh-topbar__toggle"
+                    onClick={() => setMobileOpen(true)}
+                />
+                <Link to="/home" className="rh-topbar__brand">
+                    {logo}
+                </Link>
+            </header>
+
+            {/* Fundo escurecido do drawer */}
+            <div
+                className={`rh-sidebar__scrim ${mobileOpen ? "is-open" : ""}`}
+                onClick={() => setMobileOpen(false)}
+                aria-hidden="true"
+            />
+
+            <aside className={`rh-sidebar ${mobileOpen ? "is-open" : ""}`}>
+                <div className="rh-sidebar__header">
+                    <Link to="/home" className="rh-sidebar__brand">
+                        {logo}
                     </Link>
+                    <Button
+                        icon="pi pi-times"
+                        text
+                        rounded
+                        aria-label="Fechar menu"
+                        className="rh-sidebar__close"
+                        onClick={() => setMobileOpen(false)}
+                    />
                 </div>
-                <div className="overflow-y-auto">
-                    <ul className="list-none p-3 m-0">
-                        <li>
-                            <Link
-                                to={"/home"}
-                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
-                            >
-                                <i className="pi pi-home mr-2"></i>
-                                <span className="font-medium">Home</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to={"/products"}
-                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
-                            >
-                                <i className="pi pi-shopping-cart mr-2"></i>
-                                <span className="font-medium">Produtos</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to={"/orders"}
-                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
-                            >
-                                <i className="pi pi-shopping-bag mr-2"></i>
-                                <span className="font-medium">Pedidos</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to={"/categories"}
-                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
-                            >
-                                <i className="pi pi-tags mr-2"></i>
-                                <span className="font-medium">Categorias</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to={"/users"}
-                                className="p-ripple flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full no-underline"
-                            >
-                                <i className="pi pi-users mr-2"></i>
-                                <span className="font-medium">Usuários</span>
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-                <div className="mt-auto w-full">
-                    <hr className="mb-3 mx-3 border-top-1 border-none surface-border" />
+
+                <nav className="rh-sidebar__nav">
+                    {NAV_ITEMS.map((item) => (
+                        <NavLink
+                            key={item.to}
+                            to={item.to}
+                            className={({ isActive }) =>
+                                `rh-nav-link ${isActive ? "is-active" : ""}`
+                            }
+                        >
+                            <i className={item.icon} />
+                            <span>{item.label}</span>
+                        </NavLink>
+                    ))}
+                </nav>
+
+                <div className="rh-sidebar__footer">
                     <Menu
                         model={menuItems}
                         popup
@@ -102,24 +106,27 @@ export const Sidebar = () => {
                         id="popup_menu_right"
                         popupAlignment="right"
                     />
-
-                    <Button
-                        outlined
-                        className="w-full border-0"
+                    <button
+                        type="button"
+                        className="rh-user"
                         onClick={(event) => menuRef.current?.toggle(event)}
                         aria-controls="popup_menu_right"
-                        aria-haspopup
+                        aria-haspopup="true"
                     >
                         <Avatar
                             image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
                             shape="circle"
                         />
-                        <span className="font-bold">
-                            {authenticatedUser?.email || "Admin"}
+                        <span className="rh-user__info">
+                            <span className="rh-user__name">
+                                {authenticatedUser?.email || "Admin"}
+                            </span>
+                            <span className="rh-user__role">Administrador</span>
                         </span>
-                    </Button>
+                        <i className="pi pi-ellipsis-v rh-user__more" />
+                    </button>
                 </div>
-            </div>
-        </div>
+            </aside>
+        </>
     );
 };

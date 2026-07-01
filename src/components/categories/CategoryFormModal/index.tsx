@@ -95,7 +95,7 @@ export const CategoryFormModal = ({
             draggable={false}
             header={isEditMode ? "Editar Categoria" : "Nova Categoria"}
             visible={visible}
-            className="w-30rem"
+            className="w-11 sm:w-30rem"
             onHide={() => {
                 if (!visible) return;
                 handleHideModal();

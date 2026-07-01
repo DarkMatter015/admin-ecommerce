@@ -4,10 +4,10 @@ import "./layout.css";
 
 export const Layout = () => {
     return (
-        <div className="flex h-screen w-screen">
+        <div className="app-shell">
             <Sidebar />
             {/* Main Content */}
-            <div className="flex-1 main-conent">
+            <div className="main-conent">
                 <Outlet />
             </div>
         </div>
