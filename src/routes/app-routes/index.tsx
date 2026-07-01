@@ -1,36 +1,37 @@
-import { ROLES } from "@/commons/roles_types";
-import { Layout } from "@/layouts/layout";
-import { RequireAuth } from "@/components/require-auth";
-import { HomePage } from "@/pages/home";
 import { LoginPage } from "@/pages/login";
-import { NotFound } from "@/pages/not-found";
-import { RegisterPage } from "@/pages/register";
-import { Unauthorized } from "@/pages/unauthorized";
 import { Route, Routes } from "react-router-dom";
+import { RequireAuth } from "../require-auth";
+import { ROLES } from "@/commons/roles_types";
+import { HomePage } from "@/pages/home";
+import { Layout } from "@/layouts/layout";
+import { ProductsPage } from "@/pages/products";
+import { CategoriesPage } from "@/pages/categories";
+import { OrdersPage } from "@/pages/orders";
+import { UsersPage } from "@/pages/users";
+import { NotFoundPage } from "@/pages/not-found";
+import { UnauthorizedPage } from "@/pages/unauthorized";
 
 export function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<Layout />}>
-                {/* public routes */}
-                <Route path="login" element={<LoginPage />} />
-                <Route path="register" element={<RegisterPage />} />
+            {/* rotas públicas */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-                {/* protected routes - Roles: User and Admin */}
-                <Route
-                    element={
-                        <RequireAuth allowedRoles={[ROLES.Admin, ROLES.User]} />
-                    }
-                >
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/home" element={<HomePage />} />
-
-                    <Route path="unauthorized" element={<Unauthorized />} />
-
-                    {/* catch all */}
-                    <Route path="*" element={<NotFound />} />
+            {/* rotas protegidas - exige autenticação + perfil ADMIN */}
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="home" element={<HomePage />} />
+                    <Route path="products" element={<ProductsPage />} />
+                    <Route path="categories" element={<CategoriesPage />} />
+                    <Route path="orders" element={<OrdersPage />} />
+                    <Route path="users" element={<UsersPage />} />
                 </Route>
             </Route>
+
+            {/* catch all */}
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }

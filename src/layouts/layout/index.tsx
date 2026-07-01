@@ -1,15 +1,15 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { Outlet } from "react-router-dom";
+import "./layout.css";
 
 export const Layout = () => {
-    const location = useLocation();
-    const isHome =
-        location.pathname != "/login" && location.pathname != "/cadastro";
-
     return (
-        <>
-            <main className={isHome ? "home-main" : undefined}>
+        <div className="app-shell">
+            <Sidebar />
+            {/* Main Content */}
+            <div className="main-conent">
                 <Outlet />
-            </main>
-        </>
+            </div>
+        </div>
     );
 };

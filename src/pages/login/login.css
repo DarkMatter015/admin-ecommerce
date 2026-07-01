@@ -1,0 +1,274 @@
+/* ==========================================================================
+   Login Page - Visual moderno (glassmorphism + gradiente animado)
+   ========================================================================== */
+
+.login-page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(139, 92, 246, 0.25),
+            transparent 45%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(99, 102, 241, 0.22),
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--rh-bg-1) 0%,
+            var(--rh-bg-2) 50%,
+            var(--rh-bg-3) 100%
+        );
+}
+
+/* Esferas decorativas com leve animação */
+.login-page::before,
+.login-page::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.45;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.login-page::before {
+    width: 28rem;
+    height: 28rem;
+    top: -8rem;
+    left: -6rem;
+    background: radial-gradient(circle, #8b5cf6, transparent 70%);
+    animation: login-float 12s ease-in-out infinite;
+}
+
+.login-page::after {
+    width: 24rem;
+    height: 24rem;
+    bottom: -7rem;
+    right: -5rem;
+    background: radial-gradient(circle, #6366f1, transparent 70%);
+    animation: login-float 14s ease-in-out infinite reverse;
+}
+
+@keyframes login-float {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(2rem, -1.5rem) scale(1.08);
+    }
+}
+
+/* Cartão de login */
+.login-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 27rem;
+    background: var(--rh-surface-glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius-lg);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    padding: 2.5rem 2rem;
+    animation: login-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes login-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-logo {
+    width: 8.5rem;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 14px rgba(139, 92, 246, 0.4));
+}
+
+.login-title {
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--rh-text);
+}
+
+.login-subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    color: var(--rh-text-muted);
+}
+
+/* Inputs */
+.login-card .p-inputtext,
+.login-card .p-password-input {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid var(--rh-border-strong) !important;
+    border-radius: var(--rh-radius) !important;
+    padding: 0.85rem 1rem !important;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.login-card .p-inputtext:enabled:hover,
+.login-card .p-password-input:enabled:hover {
+    border-color: rgba(139, 92, 246, 0.55) !important;
+}
+
+.login-card .p-inputtext:enabled:focus,
+.login-card .p-password-input:enabled:focus {
+    border-color: var(--rh-primary) !important;
+    box-shadow: var(--rh-glow) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Estado válido / inválido */
+.login-card .p-inputtext.i-valid,
+.login-card .i-valid .p-inputtext,
+.login-card .i-valid .p-password-input,
+.login-card .p-valid .p-inputtext,
+.login-card .p-valid .p-password-input {
+    border-color: var(--rh-success) !important;
+}
+
+.login-card .p-inputtext.i-valid:enabled:focus,
+.login-card .p-valid .p-password-input:enabled:focus {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22) !important;
+}
+
+.login-card .p-inputtext.i-invalid,
+.login-card .i-invalid .p-inputtext,
+.login-card .i-invalid .p-password-input,
+.login-card .p-invalid .p-inputtext,
+.login-card .p-invalid .p-password-input {
+    border-color: var(--rh-danger) !important;
+}
+
+.login-card .p-inputtext.i-invalid:enabled:focus,
+.login-card .p-invalid .p-password-input:enabled:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22) !important;
+}
+
+.login-card .field-icon {
+    color: rgba(226, 222, 240, 0.55);
+    transition: color 0.2s ease;
+}
+
+.login-card .field-icon.is-valid {
+    color: var(--rh-success);
+}
+
+.login-card .field-icon.is-invalid {
+    color: var(--rh-danger);
+}
+
+/* Mensagens de erro */
+.login-error {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: #fca5a5;
+    animation: login-error-in 0.2s ease both;
+}
+
+@keyframes login-error-in {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: #fcd34d;
+}
+
+/* Botão de envio */
+.login-card .login-submit-button {
+    background: var(--rh-gradient) !important;
+    border: none !important;
+    border-radius: var(--rh-radius) !important;
+    padding: 0.9rem 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.35);
+}
+
+.login-card .login-submit-button:enabled:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(99, 102, 241, 0.45);
+}
+
+.login-card .login-submit-button:enabled:active {
+    transform: translateY(0);
+}
+
+/* Divisor e rodapé */
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(226, 222, 240, 0.4);
+    font-size: 0.78rem;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.login-card .login-link {
+    color: var(--rh-link);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.login-card .login-link:hover {
+    color: var(--rh-link-hover);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 2rem 1.35rem;
+        border-radius: 1rem;
+    }
+}

@@ -1,111 +1,512 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+/* ==========================================================================
+   Riff House Admin - Tema global padronizado
+   Paleta moderna (roxo + índigo) com fundo escuro e detalhes em vidro fosco.
+   ========================================================================== */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    /* Paleta da marca */
+    --rh-primary: #8b5cf6;
+    --rh-primary-2: #6366f1;
+    --rh-primary-strong: #7c3aed;
+    --rh-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+    /* Fundo */
+    --rh-bg-1: #0f0c1d;
+    --rh-bg-2: #161229;
+    --rh-bg-3: #1a1530;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* Superfícies */
+    --rh-surface-glass: rgba(30, 25, 48, 0.72);
+    --rh-surface: #1e1930;
+    --rh-surface-2: #241d3a;
+    --rh-surface-hover: rgba(139, 92, 246, 0.12);
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
+    /* Bordas */
+    --rh-border: rgba(255, 255, 255, 0.08);
+    --rh-border-strong: rgba(255, 255, 255, 0.12);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+    /* Texto */
+    --rh-text: #f5f3ff;
+    --rh-text-muted: rgba(226, 222, 240, 0.65);
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
+    /* Estados */
+    --rh-success: #22c55e;
+    --rh-danger: #ef4444;
+    --rh-warning: #fcd34d;
+    --rh-link: #c4b5fd;
+    --rh-link-hover: #ddd6fe;
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+    /* Formas */
+    --rh-radius: 0.7rem;
+    --rh-radius-lg: 1.25rem;
+    --rh-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    --rh-glow: 0 0 0 3px rgba(139, 92, 246, 0.22);
+
+    /* Sobrescreve as variáveis do tema PrimeReact (lara-dark) */
+    --primary-color: var(--rh-primary);
+    --primary-color-text: #ffffff;
+    --surface-ground: var(--rh-bg-2);
+    --surface-section: var(--rh-surface);
+    --surface-card: var(--rh-surface);
+    --surface-overlay: var(--rh-surface-2);
+    --surface-border: var(--rh-border);
+    --surface-hover: var(--rh-surface-hover);
+    --surface-100: var(--rh-surface-hover);
+    --text-color: var(--rh-text);
+    --text-color-secondary: var(--rh-text-muted);
+    --highlight-bg: rgba(139, 92, 246, 0.18);
+    --highlight-text-color: var(--rh-link-hover);
+    --focus-ring: var(--rh-glow);
 }
 
 body {
-  margin: 0;
+    font-family: "Poppins", sans-serif;
+    padding: 0;
+    margin: 0;
+    color: var(--rh-text);
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(139, 92, 246, 0.18),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 88% 82%,
+            rgba(99, 102, 241, 0.16),
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            var(--rh-bg-1) 0%,
+            var(--rh-bg-2) 55%,
+            var(--rh-bg-3) 100%
+        );
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
+/* --------------------------------------------------------------------------
+   Tipografia
+   -------------------------------------------------------------------------- */
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--rh-text);
+    letter-spacing: -0.01em;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+a {
+    color: var(--rh-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a:hover {
+    color: var(--rh-link-hover);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.link {
+    color: var(--rh-link);
+    font-weight: 600;
+}
+
+.link:hover {
+    color: var(--rh-link-hover);
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Botões
+   -------------------------------------------------------------------------- */
+.p-button {
+    border-radius: var(--rh-radius);
+    font-weight: 600;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease,
+        background 0.2s ease;
+}
+
+/* Botão primário com gradiente da marca */
+.p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-danger):not(.p-button-help):not(.p-button-text):not(.p-button-outlined):not(.p-button-link) {
+    background: var(--rh-gradient);
+    border: none;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):enabled:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-link):enabled:active {
+    transform: translateY(0);
+}
+
+.p-button.p-button-outlined {
+    border-color: var(--rh-border-strong);
+    color: var(--rh-text);
+}
+
+.p-button.p-button-outlined:enabled:hover {
+    background: var(--rh-surface-hover);
+    border-color: var(--rh-primary);
+}
+
+.p-button:focus-visible {
+    box-shadow: var(--rh-glow);
+}
+
+/* --------------------------------------------------------------------------
+   Inputs (texto, password, número, dropdown, textarea)
+   -------------------------------------------------------------------------- */
+.p-inputtext,
+.p-password-input,
+.p-dropdown,
+.p-multiselect,
+.p-inputnumber-input,
+.p-inputtextarea {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--rh-border-strong);
+    border-radius: var(--rh-radius);
+    color: var(--rh-text);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.p-inputtext:enabled:hover,
+.p-password-input:enabled:hover,
+.p-dropdown:not(.p-disabled):hover,
+.p-multiselect:not(.p-disabled):hover {
+    border-color: rgba(139, 92, 246, 0.55);
+}
+
+.p-inputtext:enabled:focus,
+.p-password-input:enabled:focus,
+.p-dropdown:not(.p-disabled).p-focus,
+.p-multiselect:not(.p-disabled).p-focus,
+.p-inputtextarea:enabled:focus {
+    border-color: var(--rh-primary);
+    box-shadow: var(--rh-glow);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.p-inputtext::placeholder,
+.p-inputtextarea::placeholder {
+    color: rgba(226, 222, 240, 0.4);
+}
+
+.p-input-icon-left > i,
+.p-input-icon-right > i {
+    color: var(--rh-text-muted);
+}
+
+/* Estado de validação */
+.p-inputtext.p-invalid,
+.p-password.p-invalid > .p-password-input {
+    border-color: var(--rh-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Cards / painéis
+   -------------------------------------------------------------------------- */
+.p-card {
+    background: var(--rh-surface);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius-lg);
+    box-shadow: var(--rh-shadow);
+    color: var(--rh-text);
+}
+
+.p-card .p-card-title {
+    color: var(--rh-text);
+}
+
+.p-card .p-card-subtitle {
+    color: var(--rh-text-muted);
+}
+
+.p-panel,
+.p-fieldset {
+    background: var(--rh-surface);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius);
+}
+
+/* --------------------------------------------------------------------------
+   DataTable
+   -------------------------------------------------------------------------- */
+.p-datatable {
+    border-radius: var(--rh-radius);
+    overflow: hidden;
+}
+
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer {
+    background: var(--rh-surface-2);
+    border-color: var(--rh-border);
+    color: var(--rh-text);
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    background: var(--rh-surface-2);
+    border-color: var(--rh-border);
+    color: var(--rh-text);
+    font-weight: 600;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+    background: var(--rh-surface);
+    color: var(--rh-text);
+    transition: background 0.15s ease;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    border-color: var(--rh-border);
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: var(--rh-surface-hover);
+}
+
+.p-paginator {
+    background: var(--rh-surface-2);
+    border-color: var(--rh-border);
+}
+
+.p-paginator .p-paginator-page.p-highlight {
+    background: var(--rh-gradient);
+    color: #fff;
+    border-radius: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Diálogos / overlays / menus
+   -------------------------------------------------------------------------- */
+.p-dialog {
+    border-radius: var(--rh-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--rh-border);
+}
+
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer {
+    background: var(--rh-surface);
+    color: var(--rh-text);
+}
+
+.p-menu,
+.p-dropdown-panel,
+.p-multiselect-panel,
+.p-overlaypanel {
+    background: var(--rh-surface-2);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius);
+}
+
+.p-menu .p-menuitem-link:hover,
+.p-dropdown-panel .p-dropdown-item:hover,
+.p-multiselect-panel .p-multiselect-item:hover {
+    background: var(--rh-surface-hover);
+}
+
+.p-dropdown-panel .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-item.p-highlight {
+    background: rgba(139, 92, 246, 0.18);
+    color: var(--rh-link-hover);
+}
+
+/* Painel de dropdown temático (ex.: categorias no form de produtos) */
+.rh-dropdown-panel.p-dropdown-panel {
+    background: var(--rh-surface-2);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius);
+    box-shadow: var(--rh-shadow);
+    overflow: hidden;
+}
+
+.rh-dropdown-panel .p-dropdown-items {
+    padding: 0.35rem;
+}
+
+.rh-dropdown-panel .p-dropdown-item {
+    color: var(--rh-text);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    transition: background 0.15s ease;
+}
+
+.rh-dropdown-panel .p-dropdown-item .pi-tag {
+    color: var(--rh-primary);
+}
+
+.rh-dropdown-panel .p-dropdown-item:hover {
+    background: var(--rh-surface-hover);
+}
+
+.rh-dropdown-panel .p-dropdown-item.p-highlight {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--rh-link-hover);
+}
+
+.rh-dropdown-panel .p-dropdown-header {
+    background: var(--rh-surface);
+    border-bottom: 1px solid var(--rh-border);
+}
+
+.rh-dropdown-panel .p-dropdown-header .p-inputtext {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.rh-dropdown-panel .p-dropdown-empty-message {
+    color: var(--rh-text-muted);
+    padding: 0.75rem;
+}
+
+.rh-dropdown-panel .p-dropdown-footer,
+.rh-dropdown-panel .p-dropdown-items-wrapper + div {
+    background: var(--rh-surface);
+    border-top: 1px solid var(--rh-border);
+    color: var(--rh-text-muted);
+    font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tags / chips / badges
+   -------------------------------------------------------------------------- */
+.p-tag {
+    border-radius: 0.5rem;
+}
+
+.p-chip {
+    background: var(--rh-surface-hover);
+    color: var(--rh-text);
+    border-radius: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Barra de rolagem
+   -------------------------------------------------------------------------- */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.45);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.7);
+    background-clip: padding-box;
+}
+
+/* --------------------------------------------------------------------------
+   Utilitários da marca
+   -------------------------------------------------------------------------- */
+.text-brand {
+    color: var(--rh-primary) !important;
+}
+
+.bg-brand-gradient {
+    background: var(--rh-gradient) !important;
+}
+
+.surface-glass {
+    background: var(--rh-surface-glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--rh-border);
+    border-radius: var(--rh-radius-lg);
+}
+
+/* --------------------------------------------------------------------------
+   Responsividade global (telas menores / mobile)
+   -------------------------------------------------------------------------- */
+
+/* Diálogos nunca estouram a largura da viewport em telas pequenas. */
+@media (max-width: 640px) {
+    .p-dialog.p-component {
+        width: 94vw !important;
+        max-width: 94vw !important;
+        max-height: 90vh;
+        margin: 0.5rem;
+    }
+
+    .p-dialog .p-dialog-content {
+        padding: 1rem 1.25rem;
+    }
+
+    .p-dialog .p-dialog-header {
+        padding: 1rem 1.25rem;
+    }
+
+    /* Paginador quebra em várias linhas em vez de estourar. */
+    .p-paginator {
+        flex-wrap: wrap;
+        row-gap: 0.35rem;
+    }
+
+    /* Cabeçalhos de tabela/dataview com espaçamento confortável. */
+    .p-datatable .p-datatable-header,
+    .p-dataview .p-dataview-header {
+        padding: 0.85rem;
+    }
+
+    /* Células com menos padding para caber mais conteúdo. */
+    .p-datatable .p-datatable-thead > tr > th,
+    .p-datatable .p-datatable-tbody > tr > td {
+        padding: 0.65rem 0.75rem;
+    }
+
+    /* Toolbars/menus de ação quebram linha quando faltar espaço. */
+    .p-toolbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* Tabelas largas rolam horizontalmente sem quebrar o layout da página. */
+.p-datatable-wrapper {
+    overflow-x: auto;
+}
+
+/* Impede que inputs/dropdowns com largura fixa estourem em telas estreitas. */
+@media (max-width: 576px) {
+    .p-inputtext,
+    .p-dropdown,
+    .p-multiselect,
+    .p-calendar,
+    .p-password {
+        max-width: 100%;
+    }
+
+    /* Utilitários de largura fixa do PrimeFlex viram largura total no mobile. */
+    .w-12rem,
+    .w-15rem,
+    .w-20rem,
+    .w-30rem {
+        width: 100% !important;
+    }
 }
